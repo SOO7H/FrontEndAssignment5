@@ -1,6 +1,50 @@
 reloadCartCount();
-const loadAllProducts = async () => {
+
+function sorting() {
+    var sort = document.getElementById("sorttt");
+    sort.innerHTML = `
+  <div class="col-12 pb-1">
+                          <div class="d-flex align-items-center justify-content-between mb-4">
+                              <form action="">
+                                  <div class="input-group">
+                                      <input type="text" class="form-control" placeholder="Search by name" id="filterInput">
+                                      <div class="input-group-append">
+                                          <span class="input-group-text bg-transparent text-primary">
+                                              <i class="fa fa-search"></i>
+                                          </span>
+                                      </div>
+                                  </div>
+                              </form>
+                              <div class="dropdown ml-4">
+                                  <button class="btn border dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                                          aria-expanded="false">
+                                              Sort by
+                                          </button>
+                                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="triggerId" id="sort">
+                                      <button class="btn btn-outline-black decrease"
+                                      onclick="sort('pasc')"
+                                      type="button">Price (Low to High)</button>
+                                      <button class="btn btn-outline-black decrease"
+                                      onclick="sort('pdesc')"
+                                      type="button">Price (High to Low)</button>
+                                      <button class="btn btn-outline-black decrease"
+                                      onclick="sort('rasc')"
+                                      type="button">Rating (Low to High)</button>
+                                      <button class="btn btn-outline-black decrease"
+                                      onclick="sort('rdesc')"
+                                      type="button">Rating (High to Low)</button>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+  `;
+  }
   sorting();
+
+
+
+
+const loadAllProducts = async () => {
   const products = await getAllProducts();
   var newprod = document.getElementById("shop-products");
   console.log(products);
@@ -35,6 +79,25 @@ const loadAllProducts = async () => {
 
 loadAllProducts();
 
+let productCards;
+let filterInput = document.getElementById("filterInput");
+filterInput.addEventListener("keyup", filterProducts);
+function filterProducts() {
+    let filterValue = filterInput.value.toUpperCase();
+    productCards=document.getElementById("shop-products");
+    let item = productCards.querySelectorAll(".fil");
+  
+    for (let i = 0; i < item.length; i++) {
+      let span = item[i].querySelector(".title");
+  
+      if (span.innerHTML.toUpperCase().indexOf(filterValue) > -1) {
+        item[i].style.display = "initial";
+      } else {
+        item[i].style.display = "none";
+      }
+    }
+  }
+
 const addToCart = (id) => {
   var cartItems = localStorage.getItem("cart-items");
   if (!cartItems) {
@@ -49,63 +112,6 @@ const addToCart = (id) => {
   reloadCartCount();
 };
 
-let filterInput = document.getElementById("filterInput");
-filterInput.addEventListener("keyup", filterProducts);
-
-function filterProducts() {
-  let filterValue = filterInput.value.toUpperCase();
-  let item = productCards.querySelectorAll(".fil");
-
-  for (let i = 0; i < item.length; i++) {
-    let span = item[i].querySelector(".title");
-
-    if (span.innerHTML.toUpperCase().indexOf(filterValue) > -1) {
-      item[i].style.display = "initial";
-    } else {
-      item[i].style.display = "none";
-    }
-  }
-}
-
-function sorting() {
-  var sort = document.getElementById("shop-products");
-  sort.innerHTML = `
-<div class="col-12 pb-1">
-                        <div class="d-flex align-items-center justify-content-between mb-4">
-                            <form action="">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Search by name" id="filterInput">
-                                    <div class="input-group-append">
-                                        <span class="input-group-text bg-transparent text-primary">
-                                            <i class="fa fa-search"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </form>
-                            <div class="dropdown ml-4">
-                                <button class="btn border dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
-                                        aria-expanded="false">
-                                            Sort by
-                                        </button>
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="triggerId" id="sort">
-                                    <button class="btn btn-outline-black decrease"
-                                    onclick="sort('pasc')"
-                                    type="button">Price (Low to High)</button>
-                                    <button class="btn btn-outline-black decrease"
-                                    onclick="sort('pdesc')"
-                                    type="button">Price (High to Low)</button>
-                                    <button class="btn btn-outline-black decrease"
-                                    onclick="sort('rasc')"
-                                    type="button">Rating (Low to High)</button>
-                                    <button class="btn btn-outline-black decrease"
-                                    onclick="sort('rdesc')"
-                                    type="button">Rating (High to Low)</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-`;
-}
 
 const sort = async (param) => {
   const productss = await getAllProducts();
@@ -117,7 +123,6 @@ const sort = async (param) => {
   newprod.id = "shop-products";
   var append = document.getElementById("append");
   append.appendChild(newprod);
-  sorting();
   var products = await productss.slice(0);
   products.sort(function (a, b) {
     if (param === "pasc") {
